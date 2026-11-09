@@ -77,6 +77,17 @@ def name_of(user):
     return user["display_name"] or (user["email"] or "Someone").split("@")[0].capitalize()
 
 
+def live_user(user):
+    """The user row if it still exists, else None. A link can still point at a user deleted by hand in the data tables."""
+    if user is None:
+        return None
+    try:
+        user["email"]
+        return user
+    except Exception:
+        return None
+
+
 def row_by_id(table, row_id):
     """get_by_id that returns None for a missing or malformed id (ids come from the browser)."""
     if not isinstance(row_id, str) or not row_id:

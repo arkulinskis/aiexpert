@@ -126,7 +126,7 @@ def _plan(me):
 def _honour(limit):
     out, seen = [], set()
     for r in app_tables.credentials.search(tables.order_by("issued", ascending=False)):
-        u = r["user"]
+        u = C.live_user(r["user"])
         if r["revoked"] or u is None or not u["honour_roll"] or u.get_id() in seen:
             continue
         seen.add(u.get_id())  # one line per person: their latest credential

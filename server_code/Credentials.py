@@ -64,7 +64,8 @@ def admin_credentials(query=None):
     out = []
     for r in rows[:300]:
         d = cred_public(r)
-        d["email"] = r["user"]["email"] if r["user"] is not None else ""
+        u = C.live_user(r["user"])
+        d["email"] = u["email"] if u is not None else ""
         out.append(d)
     return {"items": out, "total": len(rows)}
 

@@ -1,0 +1,28 @@
+<anvil-form layout="AI_Expert.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="lb">
+      <anvil-component type="AI_Expert.Components.Hero" name="hero"></anvil-component>
+      <div class="ui-wrap lb-body">
+        <div anvil:name="list_box">
+          <anvil-component type="RepeatingPanel" name="labs_panel" prop:item_template="AI_Expert.Items.LabCard" prop:role='["lb-grid"]'></anvil-component>
+          <p class="small muted lb-note">Labs run in your browser and send nothing anywhere. Members get their completed labs recorded, with XP the first time.</p>
+        </div>
+        <div anvil:name="lab_box">
+          <div class="lb-goal">
+            <i class="ic ic-target"></i>
+            <div><b>Goal</b><anvil-component type="Label" name="goal_label" prop:role='["lb-goal-t"]'></anvil-component></div>
+            <anvil-component type="Label" name="best_label" prop:role='["badge", "badge-good", "ic-check"]'></anvil-component>
+          </div>
+          <anvil-component type="AI_Expert.Components.LabStage" name="stage"></anvil-component>
+          <div class="ui-row lb-after">
+            <a class="ui-btn" anvil:dom-node="module_link"><i class="ic ic-book"></i><span anvil:dom-node="module_text"></span></a>
+            <a class="ui-btn ghost" href="#labs"><i class="ic ic-columns"></i>All labs</a>
+          </div>
+        </div>
+        <div class="ui-wrap ui-narrow" anvil:name="missing_box">
+          <div class="ui-empty"><i class="ic ic-alert"></i><h2>That lab doesn&rsquo;t exist</h2><p>It may have been renamed.</p><a class="ui-btn primary" href="#labs">All labs</a></div>
+        </div>
+      </div>
+    </div>
+  </anvil-block>
+</anvil-form>

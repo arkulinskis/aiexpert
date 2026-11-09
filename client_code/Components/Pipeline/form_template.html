@@ -1,0 +1,14 @@
+---
+custom_component: true
+toolbox_item:
+  title: Demo vs production pipeline
+  group: AI Expert
+help_text: |
+  The landing hero: a naive RAG pipeline and the production pipeline layered on top of each other, with a drag
+  handle (mouse, touch or arrow keys) to compare them. Drawn by AX.pipeline in theme/assets/ax-kit.js on show.
+---
+<div class="ax-pipe-host">
+  <div class="ax-pipe" anvil:dom-node="box">
+    <noscript>Demo: docs, chunk, embed, vector database, LLM. Production: rewrite, BM25 and vectors, fuse, rerank, eval gate, cited answer.</noscript>
+  </div>
+</div>

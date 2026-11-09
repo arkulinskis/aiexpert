@@ -1,0 +1,48 @@
+<anvil-form layout="AI_Expert.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="pl">
+      <anvil-component type="AI_Expert.Components.Hero" name="hero"></anvil-component>
+      <div class="ui-wrap pl-body">
+        <div class="pl-grid">
+          <aside class="ui-card ui-stack pl-form">
+            <h2 class="ax-ph">Your situation</h2>
+            <label class="ui-field"><span>Your background</span>
+              <anvil-component type="DropDown" name="bg_box"></anvil-component>
+            </label>
+            <label class="ui-field"><span>Your goal</span>
+              <anvil-component type="DropDown" name="goal_box"></anvil-component>
+            </label>
+            <label class="ui-field"><span>Hours a week you can give it</span>
+              <anvil-component type="DropDown" name="hours_box"></anvil-component>
+            </label>
+            <anvil-component type="Button" name="save_button" prop:text="Build my plan" prop:role='["btn", "btn-primary", "btn-block", "ic-calendar"]'></anvil-component>
+            <anvil-component type="Button" name="restart_button" prop:text="Restart the dates from this week" prop:role='["btn", "btn-sm", "btn-block", "ic-refresh"]'></anvil-component>
+            <p class="small muted">Each module counts its reading time plus about 50 minutes for drills and the challenge. Change your answers any time; progress you&rsquo;ve made stays.</p>
+          </aside>
+          <div class="pl-main">
+            <div class="ui-empty" anvil:name="empty_box">
+              <i class="ic ic-calendar"></i>
+              <h2>No plan yet</h2>
+              <p>Pick your background, goal and hours, and you&rsquo;ll get every module and final exam laid out week by week, in the order that fits your goal.</p>
+            </div>
+            <div anvil:name="plan_box">
+              <div class="pl-sum">
+                <div><span class="k">Goal</span><anvil-component type="Label" name="goal_label" prop:role='["pl-v"]'></anvil-component></div>
+                <div><span class="k">Finish by</span><anvil-component type="Label" name="ends_label" prop:role='["pl-v"]'></anvil-component></div>
+                <div><span class="k">Progress</span><anvil-component type="Label" name="done_label" prop:role='["pl-v"]'></anvil-component></div>
+              </div>
+              <anvil-component type="Label" name="behind_label" prop:role='["msg-note"]'></anvil-component>
+              <section class="ax-panel pl-warm" anvil:name="warm_box">
+                <header><h2>Before you start</h2><a class="small" href="#library">The Library</a></header>
+                <div class="body">
+                  <anvil-component type="RepeatingPanel" name="warm_panel" prop:item_template="AI_Expert.Items.ResourceRow" prop:role='["lib-list"]'></anvil-component>
+                </div>
+              </section>
+              <anvil-component type="RepeatingPanel" name="weeks_panel" prop:item_template="AI_Expert.Items.PlanWeek" prop:role='["pl-weeks"]'></anvil-component>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </anvil-block>
+</anvil-form>

@@ -1,0 +1,23 @@
+---
+custom_component: true
+properties:
+  - name: pct
+    type: number
+    default_value: 0
+    description: Progress, 0 to 100
+    default_binding_prop: true
+  - name: size
+    type: number
+    default_value: 64
+    description: Width and height in pixels
+  - name: label
+    type: string
+    default_value: ""
+    description: Text in the middle (empty = the percentage)
+toolbox_item:
+  title: Progress ring
+  group: AI Expert
+help_text: |
+  A progress ring (AX.ring in theme/assets/ax-kit.js).
+---
+<span class="ax-ring-host" anvil:dom-node="box"></span>

@@ -1,0 +1,25 @@
+---
+custom_component: true
+properties:
+  - name: lab
+    type: string
+    default_value: ""
+    description: "Which lab to mount: cost, chunk, retrieval or judge"
+events:
+  - name: lab_done
+    description: "The learner reached the lab's goal"
+    parameters:
+      - name: score
+        description: 0-100
+      - name: detail
+        description: a JSON string with what they chose
+toolbox_item:
+  title: Lab stage
+  group: AI Expert
+help_text: |
+  Mounts one of the in-browser labs from theme/assets/ax-labs.js (AX.lab) when shown and removes it when hidden.
+  Raises lab_done(score, detail) once when the learner reaches the goal.
+---
+<div class="ax-labstage-host">
+  <div class="ax-labstage" anvil:dom-node="box"></div>
+</div>

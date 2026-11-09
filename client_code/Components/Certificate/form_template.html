@@ -1,0 +1,19 @@
+---
+custom_component: true
+properties:
+  - name: cert
+    type: object
+    default_value: null
+    description: "The credential: {holder, credential, code, issued, status, demo, modules, track}"
+    default_binding_prop: true
+  - name: decorative
+    type: boolean
+    default_value: false
+    description: Hidden from screen readers (a sample or a thumbnail inside a link that already says what it is)
+toolbox_item:
+  title: Certificate
+  group: AI Expert
+help_text: |
+  The AI Expert certificate (AX.cert in theme/assets/ax-kit.js), drawn at 1000x707 and scaled to the width it is given.
+---
+<div class="ax-cert-host"><div class="ax-cert-wrap" anvil:dom-node="wrap"></div></div>

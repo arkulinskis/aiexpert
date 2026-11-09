@@ -1,0 +1,35 @@
+<anvil-form layout="AI_Expert.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="lib">
+      <anvil-component type="AI_Expert.Components.Hero" name="hero"></anvil-component>
+      <div class="ui-wrap lib-body">
+        <div class="lib-filters">
+          <label class="ui-field lib-search"><span>Search</span>
+            <anvil-component type="TextBox" name="search_box" prop:placeholder="Title, author or topic"></anvil-component>
+          </label>
+          <label class="ui-field"><span>Program</span>
+            <anvil-component type="DropDown" name="track_box"></anvil-component>
+          </label>
+          <label class="ui-field"><span>Kind</span>
+            <anvil-component type="DropDown" name="kind_box"></anvil-component>
+          </label>
+          <div class="lib-checks">
+            <anvil-component type="CheckBox" name="free_box" prop:text="Free only" prop:role='["ax-check"]'></anvil-component>
+            <anvil-component type="CheckBox" name="saved_box" prop:text="My reading list" prop:role='["ax-check"]'></anvil-component>
+          </div>
+        </div>
+        <anvil-component type="Label" name="count_label" prop:role='["fine-print"]'></anvil-component>
+        <anvil-component type="RepeatingPanel" name="list_panel" prop:item_template="AI_Expert.Items.ResourceRow" prop:role='["lib-grid"]'></anvil-component>
+        <div class="ui-empty" anvil:name="empty_box">
+          <i class="ic ic-search"></i>
+          <h2 anvil:dom-node="empty_title">Nothing matches</h2>
+          <p anvil:dom-node="empty_text">Try another word or clear a filter.</p>
+        </div>
+        <div class="ui-card lib-note">
+          <h2 class="ax-ph">How we choose</h2>
+          <p class="muted">Every link goes to the original: the author&rsquo;s site, the publisher, arXiv or official docs. We prefer primary sources and free material, mark paid books clearly, and never host copies of anything. Missing something great? <a href="https://prepsto.com/#f/__PREPSTO_CODE__" target="_blank" rel="noopener" data-prepsto-open>Suggest it</a>.</p>
+        </div>
+      </div>
+    </div>
+  </anvil-block>
+</anvil-form>

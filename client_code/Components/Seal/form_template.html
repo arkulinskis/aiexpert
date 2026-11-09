@@ -1,0 +1,19 @@
+---
+custom_component: true
+properties:
+  - name: size
+    type: number
+    default_value: 120
+    description: Width and height in pixels
+    default_binding_prop: true
+  - name: decorative
+    type: boolean
+    default_value: false
+    description: Hidden from screen readers (when the words around it already say it)
+toolbox_item:
+  title: Verification stamp
+  group: AI Expert
+help_text: |
+  The AI Expert verification stamp, drawn by AX.seal in theme/assets/ax-kit.js.
+---
+<span class="ax-seal-host"><span class="ax-seal-box" anvil:dom-node="box"></span></span>

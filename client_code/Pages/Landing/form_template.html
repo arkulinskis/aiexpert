@@ -1,0 +1,160 @@
+<anvil-form layout="AI_Expert.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="lp">
+      <section class="lp-hero">
+        <div class="ui-wrap lp-hero-in">
+          <div class="lp-pitch">
+            <h1>Stop shipping demos. Build AI that holds up in production.</h1>
+            <p class="lead">Free training and certification for AI engineers: context engineering, production RAG, agents you can control, evaluation, security and LLMOps. Drills that stick, real incidents, hands-on labs and exams that ask what a senior engineer would do.</p>
+            <div class="lp-cta" anvil:name="guest_cta">
+              <a class="ui-btn primary lg" href="#auth/signup">Start free <i class="ic ic-arrow"></i></a>
+              <a class="ui-btn lg" href="#labs/retrieval"><i class="ic ic-flask"></i>Try a lab, no account</a>
+            </div>
+            <div class="lp-cta" anvil:name="member_cta">
+              <a class="ui-btn primary lg" href="#home">Your dashboard <i class="ic ic-arrow"></i></a>
+              <a class="ui-btn lg" href="#plan"><i class="ic ic-calendar"></i>Your plan</a>
+            </div>
+          </div>
+          <div class="lp-diagram">
+            <anvil-component type="AI_Expert.Components.Pipeline" name="pipeline"></anvil-component>
+            <p class="lp-drag small muted"><i class="ic ic-arrow"></i> Drag the handle: the same feature, demo grade and production grade.</p>
+          </div>
+        </div>
+        <div class="ui-wrap">
+          <dl class="lp-facts">
+            <div><dt>Programs</dt><dd anvil:dom-node="n_tracks">7</dd></div>
+            <div><dt>Modules</dt><dd anvil:dom-node="n_modules">28</dd></div>
+            <div><dt>Drills</dt><dd anvil:dom-node="n_items">250+</dd></div>
+            <div><dt>Incident files</dt><dd anvil:dom-node="n_cases">18</dd></div>
+            <div><dt>Price</dt><dd>$0</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="lp-section" id="vs">
+        <div class="ui-wrap">
+          <h2 class="lp-h">The gap between a demo and a product</h2>
+          <p class="lp-sub">Most tutorials stop at the left column. Teams hire for the right one.</p>
+          <div class="lp-vs" role="table" aria-label="Demo thinking versus production thinking">
+            <div class="lp-vs-row head" role="row"><span role="columnheader">What the demo says</span><span role="columnheader">What production needs</span><span role="columnheader" class="ui-sr">Where we teach it</span></div>
+            <div class="lp-vs-row" role="row">
+              <span role="cell" class="demo">&ldquo;I built RAG: chunk the docs, embed them, put them in a vector database, retrieve an answer.&rdquo;</span>
+              <span role="cell" class="prod">Rewrite the query before it hits the index, run keyword and vector search together, fuse and rerank, and measure retrieval quality before trusting a single answer.</span>
+              <span role="cell"><a href="#tracks/rag">Production RAG</a></span>
+            </div>
+            <div class="lp-vs-row" role="row">
+              <span role="cell" class="demo">&ldquo;I built an agent: an LLM in a loop with tools. It figures things out.&rdquo;</span>
+              <span role="cell" class="prod">Prefer workflows; scope every tool; keep explicit state with checkpoints; budget the steps; put a human in front of anything irreversible.</span>
+              <span role="cell"><a href="#tracks/agt">Agents and Orchestration</a></span>
+            </div>
+            <div class="lp-vs-row" role="row">
+              <span role="cell" class="demo">&ldquo;I need to master prompt engineering to get the job.&rdquo;</span>
+              <span role="cell" class="prod">Make sure the model has the right context and the right data, then prove it with evaluation: error analysis, eval sets in CI, calibrated judges, tracing.</span>
+              <span role="cell"><a href="#tracks/ctx">Context Engineering</a> · <a href="#tracks/evl">Evaluation</a></span>
+            </div>
+            <div class="lp-vs-row" role="row">
+              <span role="cell" class="demo">&ldquo;It worked every time I tried it.&rdquo;</span>
+              <span role="cell" class="prod">Models sample. Structured output, validation in code, retries with backoff, fallbacks, idempotent side effects, and the arithmetic of tokens and cost.</span>
+              <span role="cell"><a href="#tracks/core">LLM Foundations</a> · <a href="#tracks/ops">LLMOps</a></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lp-section alt" id="how">
+        <div class="ui-wrap lp-how">
+          <div>
+            <h2 class="lp-h">How you learn here</h2>
+            <p class="lp-sub">Reading about RAG doesn&rsquo;t make you good at RAG. Every module makes you recall, judge and decide.</p>
+            <ol class="lp-steps">
+              <li><b>Read a short briefing</b><span>The idea, the evidence, what to do and what to avoid, with sources you can check.</span></li>
+              <li><b>Drill it</b><span>Recall cards and &ldquo;demo or production?&rdquo; calls, scheduled by spaced repetition so you keep them for months.</span></li>
+              <li><b>Take the challenge</b><span>A realistic production scenario. Write your design, compare with a senior engineer&rsquo;s answer, score yourself on the rubric.</span></li>
+              <li><b>Pass the exam, get the certificate</b><span>Each program ends in a recall round and a capstone case. Certificates have a public verification link.</span></li>
+            </ol>
+          </div>
+          <figure class="lp-callcard" aria-label="Example drill">
+            <div class="cc-top"><span class="ui-badge accent"><i class="ic ic-scale"></i>Demo or production?</span><span class="small muted">Agents · Module 3</span></div>
+            <p class="cc-q">&ldquo;If the agent crashes we just start the whole task again from scratch.&rdquo;</p>
+            <div class="cc-a"><span class="ui-badge bad"><i class="ic ic-x"></i>Demo trap</span>
+              <p>Checkpoint state so you resume, and make side effects idempotent so a retry can&rsquo;t charge a card twice.</p></div>
+            <figcaption class="small muted">One of 84 judgement calls across the programs.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="lp-section" id="programs">
+        <div class="ui-wrap">
+          <h2 class="lp-h">Seven programs, one stack</h2>
+          <p class="lp-sub">Start with LLM Foundations. Then take the specialist programs in the order your work needs. Foundations plus any three earns the AI Architect credential.</p>
+          <anvil-component type="RepeatingPanel" name="programs_panel" prop:item_template="AI_Expert.Items.TrackCard" prop:role='["lp-programs"]'></anvil-component>
+        </div>
+      </section>
+
+      <section class="lp-section alt" id="labs">
+        <div class="ui-wrap">
+          <h2 class="lp-h">Labs you can play with right now</h2>
+          <p class="lp-sub">No account, nothing to install. Watch recall jump when you add BM25 to vector search, or watch an LLM judge miss the confident wrong answers.</p>
+          <anvil-component type="RepeatingPanel" name="labs_panel" prop:item_template="AI_Expert.Items.LabCard" prop:role='["lb-grid"]'></anvil-component>
+        </div>
+      </section>
+
+      <section class="lp-section" id="incidents">
+        <div class="ui-wrap">
+          <h2 class="lp-h">Learn from other people&rsquo;s incidents</h2>
+          <p class="lp-sub">Real, publicly reported failures and successes, each with the engineering lesson. Checked against the sources.</p>
+          <anvil-component type="RepeatingPanel" name="cases_panel" prop:item_template="AI_Expert.Items.CaseCard" prop:role='["lp-cases"]'></anvil-component>
+          <a class="ui-btn" href="#cases"><i class="ic ic-alert"></i>All incident files</a>
+        </div>
+      </section>
+
+      <section class="lp-section alt" id="certificate">
+        <div class="ui-wrap lp-cert">
+          <div class="lp-cert-txt">
+            <h2 class="lp-h">A certificate that says what you did</h2>
+            <p class="lp-sub">Every module, every drill learned, every challenge passed, and a final exam. Each certificate lists its modules and has a public verification page anyone can check.</p>
+            <label class="ui-field lp-verify"><span>Check a credential ID</span>
+              <div class="ui-row">
+                <anvil-component type="TextBox" name="code_box" prop:placeholder="e.g. AIX-RAG-2026-T4WX9N" prop:role='["lp-code"]'></anvil-component>
+                <anvil-component type="Button" name="verify_button" prop:text="Verify" prop:role='["btn", "btn-primary", "ic-shield"]'></anvil-component>
+              </div>
+            </label>
+            <p class="small muted">Honest note: AI Expert certificates are issued on our own authority. They aren&rsquo;t university credits or vendor certifications; their value is that they&rsquo;re hard to earn and easy to check.</p>
+          </div>
+          <div class="lp-cert-img">
+            <anvil-component type="AI_Expert.Components.Certificate" name="sample_cert" prop:decorative="true"></anvil-component>
+          </div>
+        </div>
+      </section>
+
+      <section class="lp-section" id="honour">
+        <div class="ui-wrap">
+          <h2 class="lp-h">Recently certified</h2>
+          <anvil-component type="RepeatingPanel" name="honour_panel" prop:item_template="AI_Expert.Items.HonourCard" prop:role='["lp-honour"]'></anvil-component>
+          <p class="muted" anvil:name="no_honour">The first graduates will appear here.</p>
+        </div>
+      </section>
+
+      <section class="lp-section alt" id="faq">
+        <div class="ui-wrap ui-narrow">
+          <h2 class="lp-h">Questions</h2>
+          <details class="lp-faq"><summary>Is it really free?</summary><p>Yes. Every program, lab, drill, exam and certificate is free for now. There are no ads and we don&rsquo;t sell your data. If we ever add paid extras, what you&rsquo;ve earned stays yours.</p></details>
+          <details class="lp-faq"><summary>Who is it for?</summary><p>Software engineers moving into AI work, data scientists and ML engineers moving to LLM products, and tech leads who review AI designs. You should be comfortable reading code; the programs teach systems thinking, not one framework.</p></details>
+          <details class="lp-faq"><summary>Will this get me a $200k job?</summary><p>No course can promise that, and you should be wary of any that does. What we can do is teach the skills interviewers and senior engineers actually probe: retrieval quality, agent control, evaluation, security and cost. The capstones are written like system-design interview questions.</p></details>
+          <details class="lp-faq"><summary>How long does it take?</summary><p>Each module is about an hour with drills and the challenge; each program is a few evenings. With five hours a week, all seven programs take roughly three months. Make a plan after you sign up and it&rsquo;ll give you dates.</p></details>
+          <details class="lp-faq"><summary>Where does the content come from?</summary><p>From primary sources: research papers, engineering write-ups from the teams that built these systems, official docs, standards like the OWASP Top 10 for LLM applications, and court and news records for the incidents. Every module lists its sources, and the Library links to the originals.</p></details>
+          <details class="lp-faq"><summary>Is the certificate accredited?</summary><p>No. It&rsquo;s issued by AI Expert on its own authority, says exactly what you completed, and can be verified by anyone with the link. Treat it as evidence of work, not a licence.</p></details>
+          <details class="lp-faq"><summary>Which models and frameworks do you teach?</summary><p>The ideas that outlast them. Examples mention real tools (BM25, rerankers, LangGraph, MCP, vLLM, OpenTelemetry), but the drills and challenges test the engineering judgement that transfers between providers.</p></details>
+        </div>
+      </section>
+
+      <section class="lp-section lp-last">
+        <div class="ui-wrap lp-band">
+          <div><h2>Your next AI feature can be production grade.</h2><p>Start with LLM Foundations: four modules, a few evenings.</p></div>
+          <a class="ui-btn primary lg" href="#auth/signup" anvil:name="band_guest">Start free</a>
+          <a class="ui-btn primary lg" href="#tracks/core" anvil:name="band_member">Open LLM Foundations</a>
+        </div>
+      </section>
+    </div>
+  </anvil-block>
+</anvil-form>

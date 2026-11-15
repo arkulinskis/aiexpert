@@ -138,7 +138,7 @@ def feedback():
     if window.get("Prepsto") and window.Prepsto.open:
         window.Prepsto.open()
     else:
-        window.open("https://prepsto.com/#f/__PREPSTO_CODE__", "_blank", "noopener")
+        window.open("https://prepsto.com/#f/5kjceg8", "_blank", "noopener")
 
 
 # ---------------------------------------------------------------- accessibility (WCAG AA)

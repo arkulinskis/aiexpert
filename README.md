@@ -59,7 +59,7 @@ components, RepeatingPanels).
 - **Labs** record a member's first completion (+15 XP). **Reading list**: Save any Library resource.
 - **Credentials** (`#credentials`), **Profile** (name on certificates, job title, Honour Roll opt-in, theme, password).
 
-**For admins** (`#admin`; arkulinskis@gmail.com becomes admin on first sign-in): overview, credentials (search,
+**For admins** (`#admin`; your admin email (App Secret `admin_emails`) becomes admin on first sign-in): overview, credentials (search,
 revoke/reinstate), feedback inbox (older messages), users, demo data (six fictional AI engineers with progress and
 certificates, marked as sample records).
 

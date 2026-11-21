@@ -12,6 +12,8 @@ class CredCard(CredCardTemplate):
         c = self.item
         n = self.dom_nodes
         n["a"].setAttribute("href", "#certificate/" + c["code"])
+        n["ev"].setAttribute("href", "#certificate/" + c["code"] + "/evidence")
+        n["ev"].hidden = c.get("status") == "revoked"
         n["title"].textContent = c["credential"]
         n["sub"].textContent = "%s · %s" % (c["code"], ax.date(c.get("issued")))
         revoked = c.get("status") == "revoked"

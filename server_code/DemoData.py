@@ -23,8 +23,32 @@ DEMO_USERS = [
 ]
 FELLOW_CODE = "AIX-ARC-2026-D9RV3C"   # Tomás holds Foundations + 3 specialist certificates
 
+# Tomás chose to show evidence on his Evaluation certificate (and his component certificates on AI Architect), so the
+# certificate pages show what the Evidence section looks like. His words paraphrase the model answers (sample records).
+EVIDENCE_CODE = "AIX-EVL-2026-B6YV4M"
+EVIDENCE_CAPSTONE = (
+    "Week 1: I'd add tracing to every tutoring session first, then sample about 120 sessions across topics and grades, "
+    "including the ones parents complained about. A maths teacher owns the definition of good and reads them with me in a "
+    "simple viewer; we write down the first thing that went wrong in each, group the notes and count them (gives the final "
+    "answer, arithmetic slip, wrong method, pitched too high, helped with a test).\n\n"
+    "Week 2: code checks wherever they work: re-run the arithmetic in each worked step with a calculator, and flag a final "
+    "numeric answer that appears before the student has tried. A labelled set of a few hundred real problems plus every complaint.\n\n"
+    "Week 3: two yes/no LLM judges ('guides rather than tells', 'right level for the grade'), calibrated on the teacher's "
+    "labels with a held-out split, reporting true positive and true negative rates.\n\n"
+    "Week 4: all of it in CI with thresholds, online checks on a sample of live sessions, and a dashboard by failure mode. "
+    "The number for investors is the failure rate per mode, with the judges' error rates stated next to it.")
+EVIDENCE_CHALLENGE = (
+    "Before anyone fixes the latest complaint, I'd sample around 120 recent traces across questions, bookings and follow-ups, "
+    "on purpose including thumbs-down and unrated ones. The person who knows the listings best reads them in one simple "
+    "screen and notes the first failure in each. Then we group those notes into failure modes (stale listing details, "
+    "bookings outside the agent's free slots, ignored budget, answers far too long) and count them.\n\n"
+    "The top modes get a root cause (data freshness, a missing availability tool, the prompt) and a targeted eval: a code "
+    "check that every booking falls inside a free slot, labelled examples for the rest. We repeat this monthly and report "
+    "progress by failure mode instead of one '80%' number.")
+EVIDENCE_PROJECT = ("https://example.com/sample/eval-harness", "Sample project link: an eval harness for a tutoring assistant")
+
 # Tables that hold demo rows (each has an is_demo column). Children before parents.
-DEMO_TABLES = ["bookmarks", "lab_runs", "credentials", "exams", "attempts", "module_progress", "card_state"]
+DEMO_TABLES = ["bookmarks", "lab_runs", "daily_runs", "cert_evidence", "credentials", "exams", "attempts", "module_progress", "card_state"]
 
 
 def state():
@@ -60,19 +84,46 @@ def load():
                                               reviews=4, lapses=0, last=now - dt.timedelta(days=3), is_demo=True)
         for track, days, code in creds:
             when = now - dt.timedelta(days=days)
+            detail: dict = {"items": []}
+            if code == EVIDENCE_CODE:
+                detail = {"items": [], "answer": EVIDENCE_CAPSTONE, "points": [True, True, True, True, False]}
             app_tables.exams.add_row(user=u, track=track, started=when - dt.timedelta(minutes=40), finished=when, card_score=92,
-                                     scenario_score=80, passed=True, detail={"items": []}, is_demo=True)
-            app_tables.credentials.add_row(user=u, track=track, code=code, holder=name, issued=when, score=86, revoked=False, is_demo=True)
+                                     scenario_score=80, passed=True, detail=detail, is_demo=True)
+            cred = app_tables.credentials.add_row(user=u, track=track, code=code, holder=name, issued=when, score=86, revoked=False, is_demo=True)
+            if code == EVIDENCE_CODE:
+                _demo_evidence(u, cred, now)
         if name.startswith("Tomás"):
-            app_tables.credentials.add_row(user=u, track="fellow", code=FELLOW_CODE, holder=name, issued=now - dt.timedelta(days=1),
-                                           score=100, revoked=False, is_demo=True)
+            arc = app_tables.credentials.add_row(user=u, track="fellow", code=FELLOW_CODE, holder=name, issued=now - dt.timedelta(days=1),
+                                                 score=100, revoked=False, is_demo=True)
+            try:
+                app_tables.cert_evidence.add_row(credential=arc, user=u, show_capstone=True, attempts=[], project_url="",
+                                                 project_note="", updated=now, is_demo=True)
+            except Exception:
+                pass  # the table arrives with the Schema Mismatch step; the demo works without it
     C.set_setting("demo", "loaded")
     return counts()
 
 
+def _demo_evidence(u, cred, now):
+    """Tomás's Evaluation certificate shows his capstone answer, one challenge answer and a sample project link."""
+    a = app_tables.attempts.get(user=u, challenge="ch-evl-errors")
+    if a is None:
+        return
+    a.update(answer=EVIDENCE_CHALLENGE, points=[True, True, True, True, True], score=100)
+    try:
+        app_tables.cert_evidence.add_row(credential=cred, user=u, show_capstone=True, attempts=[a.get_id()],
+                                         project_url=EVIDENCE_PROJECT[0], project_note=EVIDENCE_PROJECT[1], updated=now, is_demo=True)
+    except Exception:
+        pass  # the table arrives with the Schema Mismatch step
+
+
 def remove(remember=True):
     for name in DEMO_TABLES:
-        for r in getattr(app_tables, name).search(is_demo=True):
+        try:
+            rows = list(getattr(app_tables, name).search(is_demo=True))
+        except Exception:
+            continue  # a table not accepted in Anvil yet
+        for r in rows:
             r.delete()
     for u in app_tables.users.search(is_demo=True):
         u.delete()
@@ -84,5 +135,8 @@ def remove(remember=True):
 def counts():
     out = {"users": len(app_tables.users.search(is_demo=True))}
     for name in DEMO_TABLES:
-        out[name] = len(getattr(app_tables, name).search(is_demo=True))
+        try:
+            out[name] = len(getattr(app_tables, name).search(is_demo=True))
+        except Exception:
+            out[name] = 0
     return out

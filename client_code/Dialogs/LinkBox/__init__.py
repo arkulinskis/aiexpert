@@ -7,9 +7,13 @@ from ... import state
 class LinkBox(LinkBoxTemplate):
     """Shows a link to copy by hand (when the browser doesn't allow copying to the clipboard)."""
 
-    def __init__(self, link="", **properties):
+    def __init__(self, link="", title="", caption="", **properties):
         super().__init__(**properties)
         self.link_box.text = link
+        if title:
+            self.dom_nodes["head"].textContent = title
+        if caption:
+            self.dom_nodes["cap"].textContent = caption
 
     @handle("", "show")
     def form_show(self, **event_args):

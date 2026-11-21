@@ -1,0 +1,65 @@
+<anvil-form layout="AI_Expert.Layouts.Shell">
+  <anvil-block slot="content">
+    <div class="dy">
+      <anvil-component type="AI_Expert.Components.Hero" name="hero"></anvil-component>
+      <div class="ui-wrap dy-body">
+        <div class="dy-wait" anvil:name="loading_box"><span class="dy-pulse" aria-hidden="true"></span><p class="muted">Dealing today&rsquo;s five calls&hellip;</p></div>
+        <div class="ui-empty" anvil:name="error_box">
+          <i class="ic ic-alert"></i><h2>Today&rsquo;s five didn&rsquo;t load</h2>
+          <p>Check your connection, then try again.</p>
+          <anvil-component type="Button" name="retry_button" prop:text="Try again" prop:role='["btn", "btn-primary", "ic-refresh"]'></anvil-component>
+        </div>
+
+        <div class="dy-play" anvil:name="play_box">
+          <ol class="dy-dots" anvil:dom-node="dots" aria-hidden="true"></ol>
+          <div class="ui-card dy-card">
+            <div class="dy-card-top"><span class="dy-count" anvil:dom-node="count"></span><span class="dy-track small muted" anvil:dom-node="track"></span></div>
+            <p class="dy-q" anvil:dom-node="q"></p>
+            <p class="dy-ask small muted">Is this production practice, or a demo trap?</p>
+            <div class="dy-choices" anvil:name="choices">
+              <anvil-component type="Button" name="prod_button" prop:text="Production practice" prop:role='["btn", "btn-lg", "dy-prod", "ic-shield"]'></anvil-component>
+              <anvil-component type="Button" name="demo_button" prop:text="Demo trap" prop:role='["btn", "btn-lg", "dy-demo", "ic-alert"]'></anvil-component>
+            </div>
+            <div class="dy-verdict" anvil:name="verdict_box">
+              <anvil-component type="Label" name="verdict_label" prop:role='["dy-vhead"]'></anvil-component>
+              <p class="dy-why" anvil:dom-node="why"></p>
+              <p class="dy-crowd small" anvil:dom-node="crowd"></p>
+              <div class="dy-vfoot">
+                <a class="dy-learn" anvil:dom-node="learn"><i class="ic ic-book"></i><span anvil:dom-node="learn_text"></span></a>
+                <anvil-component type="Button" name="next_button" prop:text="Next call" prop:role='["btn", "btn-primary", "ic-arrow"]'></anvil-component>
+              </div>
+            </div>
+          </div>
+          <p class="small muted dy-fine">Same five calls for everyone today. Answers come from the AI Expert modules; each one links to its source module.</p>
+        </div>
+
+        <div class="dy-end" anvil:name="end_box">
+          <div class="ui-card dy-score">
+            <div class="dy-score-top">
+              <div class="dy-big"><b anvil:dom-node="score"></b><span anvil:dom-node="score_sub"></span></div>
+              <div class="dy-streak"><i class="ic ic-flame"></i><div><b anvil:dom-node="streak"></b><span class="small muted" anvil:dom-node="streak_sub"></span></div></div>
+            </div>
+            <p class="dy-marks-line" anvil:dom-node="marks_line" aria-hidden="true"></p>
+            <pre class="dy-share" anvil:dom-node="share_text"></pre>
+            <div class="ui-row dy-share-row">
+              <anvil-component type="Button" name="copy_button" prop:text="Copy result" prop:role='["btn", "btn-primary", "ic-copy"]'></anvil-component>
+              <a class="ui-btn" target="_blank" rel="noopener" anvil:dom-node="linkedin_a"><i class="ic ic-external"></i>Share on LinkedIn</a>
+            </div>
+            <p class="small muted dy-next"><i class="ic ic-clock"></i><span anvil:dom-node="next_text"></span></p>
+          </div>
+          <div class="ui-card dy-guest" anvil:name="guest_box">
+            <div>
+              <h2 class="ax-ph">Keep your streak: free account</h2>
+              <p class="muted small">Your streak lives in this browser for now. With a free account it follows you, every daily play adds XP, and the calls you miss become drills.</p>
+            </div>
+            <a class="ui-btn primary" href="#auth/signup"><i class="ic ic-user"></i>Create a free account</a>
+          </div>
+          <section class="ax-panel dy-review">
+            <header><h2>Today&rsquo;s five, explained</h2></header>
+            <ol class="body dy-list" anvil:dom-node="review"></ol>
+          </section>
+        </div>
+      </div>
+    </div>
+  </anvil-block>
+</anvil-form>

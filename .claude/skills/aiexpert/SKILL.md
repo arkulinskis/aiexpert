@@ -10,7 +10,7 @@ liked: the gap between a *demo* (chunk-embed-vector DB RAG, "LLM in a loop" agen
 (hybrid search + rerank + retrieval evals, scoped tools + explicit state, context + data + evaluation). Core loop per
 module: read a sourced briefing -> drill (recall cards + "Demo or production?" calls, Leitner boxes) -> production
 challenge with a rubric -> module complete; a program's final exam issues an `AIX-...` certificate; Foundations + 3
-specialist certificates = AI Architect. Around it: 4 in-browser labs, the Library (79 resources), 18 incident files,
+specialist certificates = AI Architect. Around it: Daily 5 (#daily, public), 5 in-browser labs, the Library (79 resources), 18 incident files,
 week-by-week study plans. The engine (Learning/Exams/Credentials, Drill/Rubric components) was ported from C-Suite Coach
 (csuitecoach-forms); the content, look, labs, Library and plans are new.
 
@@ -131,10 +131,19 @@ tools/                     check.py, assets.py, build_icons.py, make_icons.py, u
   test_server.py checks counts (28 modules x 9 items), case ids, lab ids and sources. Never quote vendor prices.
 - **Incident files**: content_cases.py (role = engineering area tag; tone exemplary/cautionary/mixed). Keep claims modest.
 - **Library**: content_library.py tuples (id, title, by, kind, cost, url, tracks incl. "start", why). Link originals only.
-- **Labs**: Labs.LABS (server list) + theme/assets/ax-labs.js (`AX.lab(el, id, onDone)`); test the maths in Node with
+- **Labs** (5: cost, chunk, retrieval, judge, traces): Labs.LABS (server list) + theme/assets/ax-labs.js (`AX.lab(el, id, onDone)`); test the maths in Node with
   `AX.labTest` (see the retrieval numbers in README). A new lab: add both, a module `lab` field, and flow/a11y entries.
 - **Schematics**: `AX.fig(name)` specs in ax-kit.js FIGS (nodes on a 400x225 grid, kinds b/a/g); the Hero component and
   cards call `ax.fig(name)`.
+- **Daily 5**: server_code/Daily.py (`pick(day)` = fixed LCG shuffle of every advice item, 5 a day from EPOCH
+  2026-11-20; crowd % from daily_stats only at >= 5 plays; members' runs in daily_runs, +10 XP once; reads guarded so it
+  plays before the schema is accepted). Page Pages/Daily; guest streak in localStorage `ax-daily` (JSON string via
+  state.store_get/set). Adding calls reshuffles the order: fine, but it changes which five a day shows.
+- **Evidence on certificates**: Credentials.py `evidence_public` (in get_credential, never for revoked), 
+  `get_evidence_options` / `save_evidence` (owner only; attempts must be the caller's and from the credential's track;
+  project URL https only, <= 300; note <= 140). Client: Dialogs/EvidencePicker, Items/EvidenceCard, Pages/Certificate
+  (`#certificate/<code>/evidence` opens the picker). Demo: Tomás's AIX-EVL-2026-B6YV4M + AIX-ARC-2026-D9RV3C (Admin ->
+  Demo data -> reload to see it on an app whose demo was loaded before 2026-11-20).
 - **Plans**: Plan.py (ORDER per goal, MODULE_EXTRA minutes, WARMUP per background); stored on users.plan.
 - **Architect rule**: Curriculum.FELLOW_NEED (3) + Exams.maybe_fellow.
 

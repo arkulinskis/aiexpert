@@ -35,15 +35,16 @@ SEO = {
  "audience": "Software engineers, data scientists and ML engineers moving into AI product work, and tech leads who review AI designs",
  "about": [
   "AI Expert is a free training and certification site for AI engineers. Seven programs (LLM Foundations, Context Engineering, Production RAG, Agents and Orchestration, Evaluation and Observability, AI Security and Safety, LLMOps and Architecture) cover what separates a demo from a production system.",
-  "Each module has a short, sourced briefing, spaced-repetition drills, 'demo or production?' judgement calls and a written production scenario scored on a rubric. In-browser labs let learners feel token costs, chunking, hybrid retrieval and judge calibration; 18 real incident files show what broke in shipped AI products. Final exams issue certificates with public verification codes. AI Expert is its own authority, not an accredited body, and the certificates say so."
+  "Each module has a short, sourced briefing, spaced-repetition drills, 'demo or production?' judgement calls and a written production scenario scored on a rubric. In-browser labs let learners feel token costs, chunking, hybrid retrieval, judge calibration and error analysis on agent traces; 18 real incident files show what broke in shipped AI products. Final exams issue certificates with public verification codes. AI Expert is its own authority, not an accredited body, and the certificates say so."
  ],
  "features": [
   "Seven programs, 28 modules, 252 drills and 35 production challenges",
-  "Labs: token cost calculator, chunking workbench, hybrid retrieval with BM25 and rank fusion, LLM judge calibration",
+  "Labs: token cost calculator, chunking workbench, hybrid retrieval with BM25 and rank fusion, LLM judge calibration, error analysis of 20 agent traces",
   "18 real, sourced AI incident files",
   "A library of 79 hand-picked papers, guides, courses and tools",
   "Week-by-week study plans by background, goal and hours",
-  "Certificates with public verification codes, and the AI Architect credential"
+  "Daily 5: the same five demo-or-production calls for everyone each day, no account needed, with a shareable score",
+  "Certificates with public verification codes, optional evidence (the holder's own exam and challenge answers), and the AI Architect credential"
  ],
  "faq": [
   [

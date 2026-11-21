@@ -29,13 +29,14 @@ PAGES = {
     "cases": (None, "Incident files"),
     "library": (None, "The Library"),
     "labs": (None, "Labs"),
+    "daily": (None, "Daily 5: demo or production?"),
     "plan": ("user", "Your study plan"),
     "profile": ("user", "Your profile"),
     "admin": ("admin", "Admin"),
 }
 NAV = [("home", "Home", "home"), ("tracks", "Programs", "columns"), ("study", "Review", "cards"),
        ("plan", "Plan", "calendar")]
-NAV_MORE = [("labs", "Labs", "flask"), ("library", "Library", "book")]
+NAV_MORE = [("daily", "Daily 5", "target"), ("labs", "Labs", "flask"), ("library", "Library", "book")]
 GUEST_NAV = [("tracks", "Programs", "columns"), ("labs", "Labs", "flask"), ("library", "Library", "book"),
              ("cases", "Incidents", "alert")]
 APP_NAME = "AI Expert"
@@ -86,6 +87,9 @@ def _form(name):
     if name == "labs":
         from .Pages.Labs import Labs
         return Labs
+    if name == "daily":
+        from .Pages.Daily import Daily
+        return Daily
     if name == "plan":
         from .Pages.Plan import Plan
         return Plan

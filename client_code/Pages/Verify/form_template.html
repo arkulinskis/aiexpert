@@ -6,7 +6,7 @@
         <div class="vf-box">
           <div class="ui-card">
             <div class="vf-form">
-              <anvil-component type="TextBox" name="code_box" prop:placeholder="CSC-XXX-2026-XXXXXX" prop:role='["vf-code"]'></anvil-component>
+              <anvil-component type="TextBox" name="code_box" prop:placeholder="AIX-RAG-2026-XXXXXX" prop:role='["vf-code"]'></anvil-component>
               <anvil-component type="Button" name="verify_button" prop:text="Verify" prop:role='["btn", "btn-primary", "ic-shield"]'></anvil-component>
             </div>
             <div class="vf-res" anvil:dom-node="res_box" hidden>
@@ -18,6 +18,7 @@
                   <dt>Holder</dt><dd anvil:dom-node="holder"></dd>
                   <dt>Credential</dt><dd anvil:dom-node="credential"></dd>
                   <dt>Issued</dt><dd anvil:dom-node="issued"></dd>
+                  <dt>Evidence</dt><dd anvil:dom-node="evidence"></dd>
                   <dt>ID</dt><dd><span anvil:dom-node="code"></span> <span class="ui-badge" anvil:dom-node="sample" hidden>Sample record</span></dd>
                 </dl>
                 <a class="ui-btn sm vf-view" anvil:dom-node="view"><i class="ic ic-award"></i>View the certificate</a>

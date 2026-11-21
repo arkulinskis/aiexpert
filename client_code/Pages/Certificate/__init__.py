@@ -4,6 +4,7 @@ from anvil.js import window
 
 from ._anvil_designer import CertificateTemplate
 from ...Dialogs.LinkBox import LinkBox
+from ...Dialogs.EvidencePicker import EvidencePicker
 from ... import ax, state
 
 
@@ -14,6 +15,7 @@ class Certificate(CertificateTemplate):
     def __init__(self, args=(), **properties):
         super().__init__(**properties)
         self.code = args[0] if args else ""
+        self.mine_valid = False
         r = anvil.server.call("get_credential", self.code)
         found = bool(r and r.get("found"))
         self.found_part.visible, self.missing_part.visible = found, not found
@@ -44,6 +46,27 @@ class Certificate(CertificateTemplate):
         ax.set_text(n["program"], c["title"])
         self.outcomes_card.visible = bool(c.get("outcomes"))
         self.outcomes_panel.items = c.get("outcomes") or []
+        self.mine_valid = bool(c.get("mine") and valid)
+        self._evidence(c.get("evidence") or [])
+        if self.mine_valid and len(args) > 1 and args[1] == "evidence":
+            self.evidence_button_click()
+
+    def _evidence(self, items):
+        """The opted-in evidence (visitors) plus, for the holder, the button to choose it."""
+        self.ev_section.visible = bool(items) or self.mine_valid
+        self.evidence_button.visible = self.mine_valid
+        self.ev_panel.items = items
+        self.ev_panel.visible = bool(items)
+        self.ev_empty.visible = self.mine_valid and not items
+        ax.set_text(self.dom_nodes["ev_count"], state.plural(len(items), "piece") + " of evidence chosen by the holder"
+                    if items else "")
+
+    @handle("evidence_button", "click")
+    def evidence_button_click(self, **event_args):
+        items = alert(EvidencePicker(code=self.code), buttons=[], role="app-dialog", large=True)
+        if items is not None:
+            self._evidence(items)
+            state.toast("Evidence saved: %s shown" % state.plural(len(items), "piece") if items else "Evidence hidden", "ok")
 
     @handle("print_button", "click")
     def print_button_click(self, **event_args):

@@ -49,7 +49,8 @@ class Module(ModuleTemplate):
         if lab:
             self.dom_nodes["lab_link"].setAttribute("href", "#labs/" + lab)
             ax.set_text(self.dom_nodes["lab_text"], {"cost": "Token and cost calculator", "chunk": "Chunking workbench",
-                                                     "retrieval": "Hybrid retrieval lab", "judge": "Judge calibration lab"}.get(lab, "Open the lab"))
+                                                     "retrieval": "Hybrid retrieval lab", "judge": "Judge calibration lab",
+                                                     "traces": "Error analysis lab"}.get(lab, "Open the lab"))
         st = m.get("status")
         self.read_box.visible = bool(st and not st["read"])
         self.guest_card.visible, self.steps_card.visible = not st, bool(st)

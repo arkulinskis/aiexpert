@@ -41,6 +41,8 @@ class Verify(VerifyTemplate):
         ax.set_text(n["credential"], r["credential"])
         ax.set_text(n["issued"], ax.date(r["issued"], "long"))
         ax.set_text(n["code"], r["code"])
+        ev = len(r.get("evidence") or [])
+        ax.set_text(n["evidence"], (state.plural(ev, "piece") + " of evidence on the certificate page") if ev else "None shown")
         n["sample"].hidden = not r.get("demo")
         n["view"].setAttribute("href", "#certificate/" + r["code"])
         n["view"].hidden = False

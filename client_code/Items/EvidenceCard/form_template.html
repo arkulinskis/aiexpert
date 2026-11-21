@@ -1,0 +1,30 @@
+<div class="ev-host">
+  <article class="ev-card">
+    <header class="ev-head">
+      <div><span class="ev-kind" anvil:dom-node="label"></span><h3 class="ev-title" anvil:dom-node="title"></h3></div>
+      <span class="ui-badge" anvil:dom-node="score"></span>
+    </header>
+    <details class="ev-more" anvil:dom-node="sit_box">
+      <summary>The scenario</summary>
+      <p anvil:dom-node="situation"></p>
+      <p><b>Asked:</b> <span anvil:dom-node="ask"></span></p>
+    </details>
+    <div anvil:dom-node="answer_box">
+      <h4 class="ev-h">The holder&rsquo;s answer, exactly as submitted</h4>
+      <div class="ev-answer" anvil:dom-node="answer"></div>
+    </div>
+    <div anvil:dom-node="rubric_box">
+      <h4 class="ev-h">Rubric <span class="ui-badge warn">self-assessed</span></h4>
+      <ul class="ev-rubric" anvil:dom-node="rubric"></ul>
+    </div>
+    <details class="ev-more" anvil:dom-node="model_box">
+      <summary>Compare with the model answer</summary>
+      <p class="ev-model" anvil:dom-node="model"></p>
+    </details>
+    <ul class="ev-comps" anvil:dom-node="comps"></ul>
+    <div class="ev-project" anvil:dom-node="project_box">
+      <a class="ev-link" target="_blank" rel="noopener nofollow ugc" anvil:dom-node="link"><i class="ic ic-external"></i><span anvil:dom-node="link_text"></span></a>
+      <p class="small muted">A link the holder added themselves. AI Expert hasn&rsquo;t reviewed it.</p>
+    </div>
+  </article>
+</div>

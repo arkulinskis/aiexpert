@@ -1,5 +1,5 @@
-/* ax-labs.js: the four hands-on labs (they run entirely in the browser; nothing is sent anywhere).
-   AX.lab(el, id, onDone)  mounts lab `id` ('cost' | 'chunk' | 'retrieval' | 'judge') into el and returns a destroy function.
+/* ax-labs.js: the five hands-on labs (they run entirely in the browser; nothing is sent anywhere).
+   AX.lab(el, id, onDone)  mounts lab `id` ('cost' | 'chunk' | 'retrieval' | 'judge' | 'traces') into el and returns a destroy function.
                             onDone(score, detailJson) is called when the learner reaches the lab's goal (once per mount).
    AX.labTest              pure functions for tests (bm25, rrf, metrics, chunker, kappa, cost model).
    Python wraps it in Components/LabStage. */
@@ -473,12 +473,270 @@
     return function () { el.removeEventListener('click', onClick); };
   }
 
-  var LABS = { cost: labCost, chunk: labChunk, retrieval: labRetrieval, judge: labJudge };
+  /* ================================================================ traces (error analysis)
+     20 traces from Keyhole, a FICTIONAL rental-viewing assistant (all listings, people and policies are invented).
+     The learner may jot a note (open coding), then tags the FIRST failure in each trace. After all 20: their Pareto
+     next to the expert's, agreement, the expert's reasoning where they differ, then a pick of the first two evals. */
+  var TRACE_CODES = [
+    ['constraint', 'Ignored the user’s constraint'],
+    ['args', 'Wrong tool arguments'],
+    ['policy', 'Invented policy'],
+    ['stale', 'Stale or contradicted facts'],
+    ['long', 'Too long'],
+    ['ok', 'No problem'],
+  ];
+  var TRACE_TODAY = 'Today is Monday 9 March 2026.';
+  // u = user, ctx = retrieved snippet (null = nothing retrieved), tools = [[name, args, result]], a = final answer,
+  // x = the expert's first-failure code, why = the expert's reasoning
+  var TRACES = [
+    { u: 'Two bedrooms in Riverside under $1,800. I have a cat.', ctx: null,
+      tools: [['search_listings', { area: 'Riverside', bedrooms: 2, max_rent: 1800, pets: 'cats' }, [{ id: 'RV-114', rent: 1750, pets: 'cats ok' }, { id: 'RV-208', rent: 1690, pets: 'no pets' }]]],
+      a: 'I found two. RV-208 is the better deal at $1,690 a month, and RV-114 is $1,750. Shall I book a viewing at RV-208?',
+      x: 'constraint', why: 'The search was right and even returned the pet rule. The answer then pushed RV-208, a no-pets flat, to a cat owner.' },
+    { u: 'Is parking included at HL-302?', ctx: 'HL-302: one underground parking space is included in the rent.', tools: [],
+      a: 'Yes. One underground space is included in the rent at HL-302.',
+      x: 'ok', why: 'Short, correct and grounded in the retrieved listing.' },
+    { u: 'Book RV-114 for Thursday at 6pm.', ctx: TRACE_TODAY,
+      tools: [['book_viewing', { listing: 'RV-114', date: '2026-03-13', time: '18:00' }, { status: 'booked', date: '2026-03-13' }]],
+      a: 'You’re booked to see RV-114 on Thursday at 6pm.',
+      x: 'args', why: 'Thursday is 12 March; the tool was called with 13 March (a Friday). The answer repeats the mistake, but the first failure is the argument.' },
+    { u: 'Can I break the lease early if I move for work?', ctx: 'Lease length: 12 months. Early termination: contact the property manager.', tools: [],
+      a: 'Yes. Give 30 days’ notice and pay a one-month fee, and you can leave early for a work move.',
+      x: 'policy', why: 'Nothing retrieved mentions 30 days or a fee. The context says to contact the property manager; the model made a policy up.' },
+    { u: 'A studio within walking distance of Central Station, up to $1,500.', ctx: null,
+      tools: [['search_listings', { near: 'Central Station', max_rent: 1500, type: 'studio' }, [{ id: 'CS-011', rent: 1450, walk_min: 8 }, { id: 'NB-090', rent: 1390, walk_min: 34 }]]],
+      a: 'Top pick: NB-090 at $1,390, the cheapest studio I found.',
+      x: 'constraint', why: 'A 34-minute walk isn’t “walking distance”. CS-011 (8 minutes) met both of the user’s conditions.' },
+    { u: 'What’s the rent at HL-302?', ctx: 'HL-302 listing (updated 2 November 2025): $1,650 a month.',
+      tools: [['get_listing', { id: 'HL-302' }, { rent: 1720, updated: '2026-03-01' }]],
+      a: 'HL-302 is $1,650 a month.',
+      x: 'stale', why: 'The live tool result (updated last week) says $1,720. The answer used the four-month-old snippet instead.' },
+    { u: 'Book a viewing at CS-011 tomorrow morning.', ctx: TRACE_TODAY,
+      tools: [['check_slots', { listing: 'CS-011', date: '2026-03-10' }, ['09:30', '11:00']]],
+      a: 'CS-011 has 9:30 or 11:00 tomorrow (Tuesday 10 March). Which one works for you?',
+      x: 'ok', why: 'Right date, real slots, and it asks before booking because “morning” had two options.' },
+    { u: 'Show me three-bedrooms in Eastgate under $2,400.', ctx: null,
+      tools: [['search_listings', { area: 'Eastgate', bedrooms: 3, max_rent: '2.400' }, []]],
+      a: 'Sorry, there are no three-bedroom flats in Eastgate under $2,400 right now.',
+      x: 'args', why: 'max_rent was sent as the string "2.400" (read as 2.4), so the search could never match. The “none available” answer follows from that bad argument.' },
+    { u: 'Do you allow dogs at CS-011?', ctx: 'CS-011: dogs under 15 kg allowed; pet rent $40 a month.', tools: [],
+      a: 'Great question, and thank you for thinking about your dog’s comfort before you move! At CS-011 we do welcome dogs, which many of our residents love, as long as they weigh under 15 kg. There is a pet rent of $40 a month, which helps us look after the shared spaces. Many owners find the nearby park convenient for walks. If you have any other questions about living with pets, our team is always happy to help, and you can also ask about other pet-friendly listings.',
+      x: 'long', why: 'Every fact is correct, but the two facts the user needed (under 15 kg, $40 a month) are buried in padding, including an unsupported line about a park.' },
+    { u: 'I need a ground-floor flat; my mother uses a wheelchair. Two bedrooms in Riverside.', ctx: null,
+      tools: [['search_listings', { area: 'Riverside', bedrooms: 2 }, [{ id: 'RV-114', floor: 3, lift: true }, { id: 'RV-031', floor: 0 }]]],
+      a: 'RV-114 is a great fit: bright, on the third floor, with a lift.',
+      x: 'constraint', why: 'The search tool has no floor filter, so the arguments were fine. The answer ignored “ground floor” although RV-031 matched it.' },
+    { u: 'Is there a fee to book a viewing?', ctx: null,
+      tools: [['search_docs', { query: 'viewing fee' }, 'No matching documents.']],
+      a: 'Viewings need a $25 refundable deposit, paid when you book.',
+      x: 'policy', why: 'Nothing was found, so the honest answer is “I don’t know, here is who to ask”. The $25 deposit is invented.' },
+    { u: 'Can I see HL-302 on 2026-03-14 at 10?', ctx: null,
+      tools: [['book_viewing', { listing: 'HL-320', date: '2026-03-14', time: '10:00' }, { status: 'booked', listing: 'HL-320' }]],
+      a: 'Booked: HL-302 on Saturday 14 March at 10:00.',
+      x: 'args', why: 'The tool booked HL-320, not HL-302. The answer then claims the right flat, which hides the error from the user.' },
+    { u: 'What’s the deposit at RV-114?', ctx: 'RV-114: security deposit equal to one month’s rent ($1,750).', tools: [],
+      a: 'The deposit at RV-114 is one month’s rent: $1,750.',
+      x: 'ok', why: 'Correct, grounded, short.' },
+    { u: 'A pet-free building please, I’m allergic. One bedroom near Old Town, up to $1,600.', ctx: null,
+      tools: [['search_listings', { area: 'Old Town', bedrooms: 1, max_rent: 1600 }, [{ id: 'OT-207', rent: 1580, pets: 'cats and dogs allowed' }, { id: 'OT-115', rent: 1540, pets: 'no-pets building' }]]],
+      a: 'OT-207 is the best match: renovated kitchen, $1,580 a month.',
+      x: 'constraint', why: 'The user is allergic and asked for a pet-free building. OT-115 was the match; OT-207 allows cats and dogs.' },
+    { u: 'Is RV-208 still available?', ctx: 'RV-208: available from 1 April.',
+      tools: [['get_listing', { id: 'RV-208' }, { status: 'let', updated: '2026-03-08' }]],
+      a: 'Yes, RV-208 is available from 1 April. Want me to book a viewing?',
+      x: 'stale', why: 'The tool says the flat was let yesterday. The answer trusted the older snippet over the live result.' },
+    { u: 'Do you accept guarantors for students?', ctx: 'Applications: proof of income of 2.5 times the monthly rent.', tools: [],
+      a: 'Yes. Students can use a parent as guarantor, who needs to earn 3 times the rent.',
+      x: 'policy', why: 'The context says nothing about guarantors, and it says 2.5 times, not 3. Both claims are made up.' },
+    { u: 'Cancel my viewing for tomorrow.', ctx: TRACE_TODAY,
+      tools: [['list_bookings', { user: 'me' }, [{ id: 'V-88', listing: 'CS-011', date: '2026-03-10', time: '09:30' }]],
+              ['cancel_viewing', { booking: 'V-88' }, { status: 'cancelled' }]],
+      a: 'Done. Your 9:30 viewing at CS-011 tomorrow is cancelled.',
+      x: 'ok', why: 'It looked the booking up, cancelled the right one and confirmed what it did.' },
+    { u: 'Up to $1,300, and I don’t drive, so it must be close to a metro station.', ctx: null,
+      tools: [['search_listings', { max_rent: 1300, near: 'metro' }, [{ id: 'NB-090', rent: 1390, metro_min: 4 }, { id: 'WS-044', rent: 1280, metro_min: 6 }]]],
+      a: 'NB-090 is just 4 minutes from the metro, and at $1,390 it’s only a little over your budget.',
+      x: 'constraint', why: 'WS-044 met both conditions. The answer recommended a flat over the stated maximum.' },
+    { u: 'Any viewings at CS-011 next Friday after 5pm?', ctx: TRACE_TODAY,
+      tools: [['check_slots', { listing: 'CS-011', date: 'next Friday' }, { error: 'invalid date' }]],
+      a: 'There are no viewing slots at CS-011 next Friday.',
+      x: 'args', why: 'The tool needs an ISO date (2026-03-20) and returned an error. The answer turned a failed call into “no slots”.' },
+    { u: 'Two bedrooms in Old Town. I work nights, so it has to be quiet: nothing above a bar.', ctx: null,
+      tools: [['search_listings', { area: 'Old Town', bedrooms: 2 }, [{ id: 'OT-302', rent: 1700, note: 'above a cocktail bar, open until 2am' }, { id: 'OT-118', rent: 1760, note: 'residential street' }]]],
+      a: 'OT-302 is cheaper and right in the heart of Old Town’s nightlife.',
+      x: 'constraint', why: 'The user ruled out flats above bars. OT-118 on a residential street was the match.' },
+  ];
+  var TRACE_EVALS = [
+    { id: 'filters', t: 'Code check: every recommended listing passes the user’s hard filters (budget, pets, floor, bedrooms)', best: true,
+      fb: 'Yes. It targets the biggest failure mode (6 of 20) and is a cheap, deterministic assertion on the tool results and the answer.' },
+    { id: 'args', t: 'Code check: tool arguments are valid (ISO dates that match the user’s words, listing IDs that exist, numbers as numbers)', best: true,
+      fb: 'Yes. The second-biggest mode (4 of 20), and code catches it every time with no judge to calibrate.' },
+    { id: 'grounded', t: 'LLM judge, calibrated on expert labels: every policy claim is supported by the retrieved context', best: false,
+      fb: 'Worth building soon (3 of 20, and invented policy is risky), but a judge needs labelled examples and calibration first. Ship the two code checks this week.' },
+    { id: 'helpful', t: 'Generic 1-5 helpfulness score from an LLM', best: false,
+      fb: 'No. It matches none of the failure modes you found and gives a number nobody can act on.' },
+    { id: 'length', t: 'Length check: answers stay under 80 words', best: false,
+      fb: 'Cheap, but too long was 1 of 20. Fix the top modes first.' },
+    { id: 'bleu', t: 'BLEU score against reference answers', best: false,
+      fb: 'No. Word overlap with a reference says nothing about whether the flat fits or the policy is real.' },
+  ];
+  function traceCounts(tags) {
+    var out = {};
+    TRACE_CODES.forEach(function (c) { out[c[0]] = 0; });
+    tags.forEach(function (t) { if (t && out[t] != null) out[t] += 1; });
+    return out;
+  }
+  function labTraces(el, done) {
+    var tags = TRACES.map(function () { return null; }), notes = TRACES.map(function () { return ''; });
+    var cur = 0, picks = [], fired = false, showSum = false;
+    var codeName = {};
+    TRACE_CODES.forEach(function (c) { codeName[c[0]] = c[1]; });
+    function fmt(v) { return JSON.stringify(v, null, 1).replace(/\n\s*/g, ' '); }
+    el.innerHTML = '<div class="lab lab-traces"><div class="lab-brief"><b>Keyhole</b> is a fictional assistant that finds rental flats and books viewings, with tools for search, ' +
+      'listings and bookings. Read each trace like the domain owner. Jot a note if you like (open coding), then tag the <b>first</b> thing that went wrong. ' +
+      '<span class="muted">All listings, people and policies here are invented for practice.</span></div>' +
+      '<nav class="lt-dots" aria-label="Traces" data-r="dots"></nav><div data-r="trace"></div><div data-r="sum" role="status"></div></div>';
+    function q(sel) { return el.querySelector(sel); }
+    function tagged() { return tags.filter(function (x) { return x; }).length; }
+    function drawDots() {
+      var h = '';
+      TRACES.forEach(function (t, i) {
+        h += '<button type="button" data-go="' + i + '" class="' + (tags[i] ? 'done' : '') + (i === cur && !showSum ? ' on' : '') + '" aria-label="Trace ' + (i + 1) + (tags[i] ? ', tagged' : '') + '"' +
+          (i === cur && !showSum ? ' aria-current="step"' : '') + '>' + (i + 1) + '</button>';
+      });
+      q('[data-r=dots]').innerHTML = h;
+    }
+    function drawTrace() {
+      var t = TRACES[cur], box = q('[data-r=trace]');
+      if (showSum) { box.innerHTML = ''; return; }
+      var h = '<article class="lt-trace" aria-label="Trace ' + (cur + 1) + ' of ' + TRACES.length + '">' +
+        '<header><b>Trace ' + (cur + 1) + ' of ' + TRACES.length + '</b><span class="muted small">' + tagged() + ' tagged</span></header>' +
+        '<div class="lt-step user"><span>User</span><p>' + esc(t.u) + '</p></div>' +
+        '<div class="lt-step ctx"><span>Retrieved context</span><p>' + (t.ctx ? esc(t.ctx) : '<i class="muted">Nothing retrieved</i>') + '</p></div>';
+      if (t.tools.length) {
+        t.tools.forEach(function (c) {
+          h += '<div class="lt-step tool"><span>Tool call</span><pre><b>' + esc(c[0]) + '</b>(' + esc(fmt(c[1])) + ')\n→ ' + esc(fmt(c[2])) + '</pre></div>';
+        });
+      } else {
+        h += '<div class="lt-step tool"><span>Tool calls</span><p class="muted">None</p></div>';
+      }
+      h += '<div class="lt-step ans"><span>Final answer</span><p>' + esc(t.a) + '</p></div>' +
+        '<label class="lt-note"><span>Your note (open coding, stays in this tab)</span><textarea rows="2" data-r="note" placeholder="What went wrong first?">' + esc(notes[cur]) + '</textarea></label>' +
+        '<fieldset class="lt-tags"><legend>First failure</legend>';
+      TRACE_CODES.forEach(function (c) {
+        h += '<button type="button" data-tag="' + c[0] + '" aria-pressed="' + String(tags[cur] === c[0]) + '">' + esc(c[1]) + '</button>';
+      });
+      h += '</fieldset><div class="lt-nav"><button type="button" class="lt-btn" data-step="-1"' + (cur === 0 ? ' disabled' : '') + '>Previous</button>';
+      if (tagged() === TRACES.length) {
+        h += '<button type="button" class="lt-btn primary" data-sum="1">See your Pareto</button>';
+      } else {
+        h += '<button type="button" class="lt-btn primary" data-step="1"' + (tags[cur] ? '' : ' disabled') + '>Next trace</button>';
+      }
+      h += '</div></article>';
+      box.innerHTML = h;
+    }
+    function drawSum() {
+      var sum = q('[data-r=sum]');
+      var n = tagged();
+      if (!showSum || n < TRACES.length) {
+        sum.innerHTML = n < TRACES.length ? '<p class="muted small">' + n + ' of ' + TRACES.length + ' traces tagged. Your Pareto appears when all 20 are tagged.</p>' : '';
+        return;
+      }
+      var you = traceCounts(tags), exp = traceCounts(TRACES.map(function (t) { return t.x; }));
+      var agree = 0;
+      TRACES.forEach(function (t, i) { if (tags[i] === t.x) agree += 1; });
+      var order = TRACE_CODES.slice().sort(function (a, b) { return exp[b[0]] - exp[a[0]] || you[b[0]] - you[a[0]]; });
+      var max = Math.max.apply(null, order.map(function (c) { return Math.max(you[c[0]], exp[c[0]]); }).concat([1]));
+      var h = '<div class="lab-kpis"><div><span>Agreement with the expert</span><b>' + pct(agree / TRACES.length) + '</b><small>' + agree + ' of ' + TRACES.length + ' first failures</small></div>' +
+        '<div><span>Top failure mode (expert)</span><b class="lt-top">' + esc(codeName[order[0][0]]) + '</b><small>' + exp[order[0][0]] + ' of 20 traces</small></div></div>' +
+        '<h3 class="lt-h">Pareto: failure modes, most common first</h3><div class="lt-pareto" role="table" aria-label="Your counts and the expert counts per failure mode">' +
+        '<div class="lt-prow head" role="row"><span role="columnheader">Failure mode</span><span role="columnheader">You</span><span role="columnheader">Expert</span></div>';
+      order.forEach(function (c) {
+        h += '<div class="lt-prow" role="row"><span role="cell">' + esc(c[1]) + '</span>' +
+          '<span role="cell" class="lt-bar you"><i style="width:' + Math.round(100 * you[c[0]] / max) + '%"></i><b>' + you[c[0]] + '</b></span>' +
+          '<span role="cell" class="lt-bar exp"><i style="width:' + Math.round(100 * exp[c[0]] / max) + '%"></i><b>' + exp[c[0]] + '</b></span></div>';
+      });
+      h += '</div>';
+      var diff = [];
+      TRACES.forEach(function (t, i) { if (tags[i] !== t.x) diff.push(i); });
+      if (diff.length) {
+        h += '<h3 class="lt-h">Where you and the expert differ</h3><ol class="lt-diff">';
+        diff.forEach(function (i) {
+          var t = TRACES[i];
+          h += '<li><b>Trace ' + (i + 1) + '</b>: you said <em>' + esc(codeName[tags[i]]) + '</em>, the expert said <em>' + esc(codeName[t.x]) + '</em>. ' + esc(t.why) + '</li>';
+        });
+        h += '</ol>';
+      } else {
+        h += '<p class="lab-verdict ok">You matched the expert on every trace. That is exactly the habit: one failure per trace, the first one.</p>';
+      }
+      h += '<h3 class="lt-h">Now choose the first two evals to build</h3><p class="small muted">Pick two. Use the Pareto, and prefer cheap, deterministic checks where they work.</p><div class="lt-evals">';
+      TRACE_EVALS.forEach(function (e) {
+        var on = picks.indexOf(e.id) >= 0;
+        h += '<button type="button" data-eval="' + e.id + '" aria-pressed="' + String(on) + '">' + esc(e.t) + '</button>';
+      });
+      h += '</div>';
+      if (picks.length === 2) {
+        var good = picks.filter(function (id) { return TRACE_EVALS.some(function (e) { return e.id === id && e.best; }); }).length;
+        h += '<ul class="lt-fb">';
+        picks.forEach(function (id) {
+          var e = TRACE_EVALS.filter(function (x) { return x.id === id; })[0];
+          h += '<li class="' + (e.best ? 'ok' : '') + '"><b>' + esc(e.t) + '</b><span>' + esc(e.fb) + '</span></li>';
+        });
+        h += '</ul><p class="lab-verdict' + (good === 2 ? ' ok' : '') + '">' + (good === 2 ? 'Same two as the expert: they cover 10 of the 20 failures with two cheap code checks.' :
+          'The expert’s two: the hard-filter check and the tool-argument check. Together they cover 10 of the 20 failures, with no judge to calibrate.') + '</p>';
+        if (!fired && done) {
+          fired = true;
+          done(100, JSON.stringify({ agree: Math.round(100 * agree / TRACES.length), picks: picks.join(','), expert_picks: good }));
+        }
+      }
+      sum.innerHTML = h;
+    }
+    function draw() { drawDots(); drawTrace(); drawSum(); }
+    function onClick(e) {
+      var b = e.target.closest && e.target.closest('button');
+      if (!b || !el.contains(b) || b.disabled) return;
+      if (b.hasAttribute('data-tag')) {
+        tags[cur] = b.getAttribute('data-tag');
+      } else if (b.hasAttribute('data-step')) {
+        cur = Math.max(0, Math.min(TRACES.length - 1, cur + Number(b.getAttribute('data-step'))));
+        if (tags[cur] && b.getAttribute('data-step') === '1') {
+          var next = tags.indexOf(null);
+          if (next >= 0) cur = next;
+        }
+      } else if (b.hasAttribute('data-go')) {
+        cur = Number(b.getAttribute('data-go')); showSum = false;
+      } else if (b.hasAttribute('data-sum')) {
+        showSum = true;
+      } else if (b.hasAttribute('data-eval')) {
+        var id = b.getAttribute('data-eval'), at = picks.indexOf(id);
+        if (at >= 0) picks.splice(at, 1);
+        else { picks.push(id); if (picks.length > 2) picks.shift(); }
+        drawSum();
+        var again = q('[data-eval="' + id + '"]');
+        if (again) again.focus();
+        return;
+      } else { return; }
+      draw();
+      var focusTo = showSum ? q('[data-r=sum] .lab-kpis') : (b.hasAttribute('data-tag') ? q('[data-tag="' + tags[cur] + '"]') : q('.lt-trace header'));
+      if (focusTo) { if (!focusTo.hasAttribute('tabindex')) focusTo.setAttribute('tabindex', '-1'); focusTo.focus({ preventScroll: !showSum && b.hasAttribute('data-tag') }); }
+      if (b.hasAttribute('data-step') || b.hasAttribute('data-go')) { var tr = q('.lt-trace'); if (tr && tr.scrollIntoView) tr.scrollIntoView({ block: 'nearest' }); }
+    }
+    function onInput(e) {
+      if (e.target && e.target.getAttribute && e.target.getAttribute('data-r') === 'note') notes[cur] = e.target.value.slice(0, 500);
+    }
+    el.addEventListener('click', onClick);
+    el.addEventListener('input', onInput);
+    draw();
+    return function () { el.removeEventListener('click', onClick); el.removeEventListener('input', onInput); };
+  }
+
+  var LABS = { cost: labCost, chunk: labChunk, retrieval: labRetrieval, judge: labJudge, traces: labTraces };
   AX.lab = function (el, name, onDone) {
     var f = LABS[name];
     if (!el || !f) return function () {};
     return f(el, function (score, detail) { if (onDone) { try { onDone(score, detail); } catch (e) { console.error(e); } } }) || function () {};
   };
   AX.labTest = { bm25: bm25, dense: dense, rrf: rrf, rerank: rerank, metrics: metrics, retrieve: retrieve, chunker: chunker,
-                 chunkCheck: chunkCheck, confusion: confusion, costModel: costModel, COST0: COST0, ANSWERS: ANSWERS };
+                 chunkCheck: chunkCheck, confusion: confusion, costModel: costModel, COST0: COST0, ANSWERS: ANSWERS,
+                 TRACES: TRACES, TRACE_CODES: TRACE_CODES, TRACE_EVALS: TRACE_EVALS, traceCounts: traceCounts };
 })();

@@ -12,7 +12,7 @@ PACK = {
     },
     "modules": [
         {
-            "id": "evl-errors", "title": "Error analysis first", "minutes": 14, "fig": "evals",
+            "id": "evl-errors", "title": "Error analysis first", "minutes": 14, "fig": "evals", "lab": "traces",
             "summary": "Don't start with metrics. Start by reading traces, writing down what goes wrong, and counting.",
             "briefing": [
                 "Teams that improve AI products fastest share one habit: they look at their data. Hamel Husain's field guide, drawn from work with more than 30 companies, puts error analysis at the centre: sample real traces (inputs, retrieved context, tool calls, outputs), read them, and write a free-form note on the first thing that went wrong in each.",

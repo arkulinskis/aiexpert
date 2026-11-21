@@ -1,0 +1,32 @@
+<div class="ui ax-evpick">
+  <h2 class="dlg-h">Choose evidence to show</h2>
+  <p class="small muted">Everything starts hidden. What you tick appears on your public certificate page straight away, and unticking removes it at once. Your email is never shown.</p>
+  <div class="evp-wait muted small" anvil:name="loading_box">Loading your answers&hellip;</div>
+  <div anvil:name="error_box"><anvil-component type="Label" name="error_label" prop:role='["msg-error"]'></anvil-component></div>
+  <div anvil:name="form_box">
+    <fieldset class="evp-group">
+      <legend anvil:dom-node="cap_legend">Final examination</legend>
+      <anvil-component type="CheckBox" name="capstone_box" prop:role='["ax-check"]'></anvil-component>
+      <p class="small muted" anvil:name="no_capstone">No written capstone answer was found for this credential.</p>
+    </fieldset>
+    <fieldset class="evp-group" anvil:name="att_group">
+      <legend>Module challenges (your best attempt at each)</legend>
+      <anvil-component type="LinearPanel" name="att_panel" prop:role='["evp-list"]'></anvil-component>
+      <p class="small muted" anvil:name="no_attempts">No challenge attempts yet for this program.</p>
+    </fieldset>
+    <fieldset class="evp-group">
+      <legend>Project (optional)</legend>
+      <label class="ui-field"><span>Project link (https://, for example a GitHub repository)</span>
+        <anvil-component type="TextBox" name="url_box" prop:placeholder="https://github.com/you/your-project"></anvil-component>
+      </label>
+      <label class="ui-field"><span>One line about it (up to 140 characters)</span>
+        <anvil-component type="TextBox" name="note_box" prop:placeholder="Eval harness for a support assistant"></anvil-component>
+      </label>
+      <p class="small muted">Shown as a self-reported link: AI Expert doesn&rsquo;t review it.</p>
+    </fieldset>
+  </div>
+  <div class="ui-row end">
+    <anvil-component type="Button" name="cancel_button" prop:text="Cancel" prop:role='["btn", "btn-ghost"]'></anvil-component>
+    <anvil-component type="Button" name="save_button" prop:text="Save" prop:role='["btn", "btn-primary", "ic-check"]'></anvil-component>
+  </div>
+</div>

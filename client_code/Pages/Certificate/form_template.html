@@ -30,6 +30,17 @@
             <h2 class="ax-ph">The holder has demonstrated the ability to</h2>
             <anvil-component type="RepeatingPanel" name="outcomes_panel" prop:item_template="AI_Expert.Items.Bullet" prop:role='["ax-list"]'></anvil-component>
           </div>
+          <section class="ce-ev" anvil:name="ev_section" aria-labelledby="ce-ev-h">
+            <header class="ce-ev-head">
+              <div><h2 id="ce-ev-h">Evidence</h2><p class="small muted" anvil:dom-node="ev_count"></p></div>
+              <anvil-component type="Button" name="evidence_button" prop:text="Choose evidence to show" prop:role='["btn", "ic-edit"]'></anvil-component>
+            </header>
+            <p class="ce-ev-note">Exams are self-assessed under an honour code. These are the holder&rsquo;s own words; judge them yourself.</p>
+            <anvil-component type="RepeatingPanel" name="ev_panel" prop:item_template="AI_Expert.Items.EvidenceCard" prop:role='["ce-ev-list"]'></anvil-component>
+            <div class="ce-ev-empty" anvil:name="ev_empty">
+              <p class="muted">You haven&rsquo;t chosen any evidence yet. Hiring managers trust work they can read: show your capstone answer, your best challenge answers and a project link next to this certificate. Nothing is public until you tick it.</p>
+            </div>
+          </section>
           <p class="small muted ce-note">AI Expert is a free, independent training program. Its credentials are issued on its own authority and are not accredited academic qualifications or vendor certifications.</p>
         </div>
       </div>

@@ -26,7 +26,7 @@
   }
   try {
     for (const h of ['#landing', '#auth', '#auth/signup', '#tracks', '#tracks/rag', '#module/rag-hybrid', '#cases', '#cases/replit',
-                     '#verify/AIX-RAG-2026-T4WX9N', '#certificate/AIX-ARC-2026-D9RV3C', '#library', '#labs', '#labs/cost', '#labs/chunk', '#labs/retrieval', '#labs/judge', '#certificate/NOPE']) await check(h);
+                     '#verify/AIX-RAG-2026-T4WX9N', '#certificate/AIX-ARC-2026-D9RV3C', '#library', '#labs', '#labs/cost', '#labs/chunk', '#labs/retrieval', '#labs/judge', '#labs/traces', '#daily', '#certificate/AIX-EVL-2026-B6YV4M', '#certificate/NOPE']) await check(h);
     // sign up so the member pages can be checked too
     location.hash = '#auth/signup';
     await until(() => window.UI_READY && $$('.au-card input').length >= 3, 'sign-up form');
@@ -36,7 +36,7 @@
     $$('.anvil-role-btn-block button').find((b) => /Create account/.test(b.textContent)).click();
     await until(() => location.hash === '#home' && window.UI_READY, 'signed in', 30000);
     for (const h of ['#home', '#tracks/core', '#module/core-tools', '#study/core-models', '#study/review', '#challenge/ch-rag-hybrid',
-                     '#exam/core', '#credentials', '#profile', '#plan', '#landing']) await check(h);
+                     '#exam/core', '#credentials', '#profile', '#plan', '#daily', '#landing']) await check(h);
     log.push(bad.length ? 'PROBLEMS: ' + bad.join(' | ') : 'PASSED');
     return { ok: !bad.length, log: log };
   } catch (e) {

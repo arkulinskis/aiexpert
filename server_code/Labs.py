@@ -25,6 +25,9 @@ LABS = [
     {"id": "judge", "title": "Judge calibration lab", "module": "evl-judge", "fig": "evals", "minutes": 10,
      "blurb": "Label 16 answers yourself, compare with an LLM judge's verdicts, and compute true positive rate, true negative rate and Cohen's kappa.",
      "goal": "Label every answer and read the judge's real error rates."},
+    {"id": "traces", "title": "Error analysis lab", "module": "evl-errors", "fig": "evals", "minutes": 12,
+     "blurb": "Read 20 traces from a fictional rental-viewing assistant, tag the first failure in each, compare your counts with an expert's, then choose the first two evals to build.",
+     "goal": "Tag the first failure in all 20 traces, then pick the two evals to build first."},
 ]
 LAB_BY_ID = {x["id"]: x for x in LABS}
 

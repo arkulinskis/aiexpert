@@ -23,7 +23,7 @@ class Labs(LabsTemplate):
     def _all(self):
         self.lab_box.visible, self.missing_box.visible = False, False
         self.hero.set(fig="rag", title="Labs: feel the numbers",
-                      lead="Small simulators for the ideas that are easier to understand with your hands: token budgets, chunking, hybrid retrieval and judge calibration.",
+                      lead="Small simulators for the ideas that are easier to understand with your hands: token budgets, chunking, hybrid retrieval, judge calibration and error analysis.",
                       crumbs=[["#tracks", "Programs"], [None, "Labs"]])
         d = anvil.server.call("get_labs")
         self.labs_panel.items = d["labs"]

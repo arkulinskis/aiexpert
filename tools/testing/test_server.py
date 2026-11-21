@@ -315,7 +315,7 @@ assert call("get_library")["saved"] == [], "reading lists are per person"
 
 as_user(None)
 labs = call("get_labs")
-assert len(labs["labs"]) == 4 and all(x["best"] is None and x["module_title"] for x in labs["labs"])
+assert len(labs["labs"]) == 5 and all(x["best"] is None and x["module_title"] for x in labs["labs"])
 assert ok(call("get_lab", "retrieval"))["lab"]["track"] == "rag"
 bad(call("get_lab", "nope"))
 as_user(ana)
@@ -366,7 +366,8 @@ if "legal_server" in M:
 # ---------------------------------------------------------------------------------- every callable is covered by a permission check
 # A callable that changes data without require_user / a C.require_* check is a security hole. List the public ones here.
 PUBLIC = {"log_client_error", "session_ping", "get_me", "submit_feedback", "legal_state", "legal_accept", "get_catalog", "get_track", "get_module", "get_cases",
-          "get_case", "get_honour_roll", "get_credential", "get_library", "get_labs", "get_lab"}
+          "get_case", "get_honour_roll", "get_credential", "get_library", "get_labs", "get_lab",
+          "get_daily", "submit_daily"}
 for name, (f, need) in sorted(anvil.server.CALLABLES.items()):
     if name in PUBLIC:
         continue
